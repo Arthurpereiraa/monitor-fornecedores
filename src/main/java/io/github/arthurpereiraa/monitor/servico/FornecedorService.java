@@ -16,6 +16,7 @@ import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.PageRequest;
@@ -49,7 +50,7 @@ public class FornecedorService {
         if (fornecedores.existsByCnpj(cnpj.valor())) {
             throw new FornecedorJaCadastradoException(cnpj);
         }
-        Avaliado avaliado = avaliar(cnpj);
+        NovaAvaliacao avaliado = avaliar(cnpj);
         FornecedorEntity fornecedor = new FornecedorEntity(cnpj.valor(), Instant.now(clock));
         atualizar(fornecedor, avaliado);
         fornecedor = fornecedores.save(fornecedor);
@@ -87,16 +88,28 @@ public class FornecedorService {
     public AvaliacaoView reavaliar(String cnpjTexto) {
         Cnpj cnpj = Cnpj.de(cnpjTexto);
         FornecedorEntity fornecedor = carregar(cnpj);
-        NivelRisco anterior = fornecedor.getNivelRisco();
-        Avaliado avaliado = avaliar(cnpj);
-        atualizar(fornecedor, avaliado);
-        AvaliacaoEntity avaliacao = avaliacoes.save(new AvaliacaoEntity(fornecedor, avaliado.analise().nivel(), anterior,
-                avaliado.resultado().fonte().nome(), fornecedor.getVerificadoEm(), avaliado.analise().alertas()));
-        AvaliacaoView view = AvaliacaoView.de(avaliacao);
-        if (view.mudou()) {
-            log.warn("Risco de {} mudou de {} para {}", cnpj, anterior, view.nivel());
+        return registrar(fornecedor, avaliar(cnpj));
+    }
+
+    /**
+     * Só consulta as APIs e calcula o risco, sem gravar nada e sem abrir transação. É usado pelo job de
+     * reavaliação em lote, que separa a etapa lenta (HTTP) da gravação.
+     */
+    public NovaAvaliacao consultar(String cnpjTexto) {
+        return avaliar(Cnpj.de(cnpjTexto));
+    }
+
+    /**
+     * Grava uma avaliação calculada por {@link #consultar}. Se o fornecedor foi removido nesse meio-tempo,
+     * devolve vazio em vez de falhar.
+     */
+    @Transactional
+    public Optional<AvaliacaoView> registrarReavaliacao(NovaAvaliacao nova) {
+        Optional<FornecedorEntity> fornecedor = fornecedores.findByCnpj(nova.cnpj().valor());
+        if (fornecedor.isEmpty()) {
+            log.info("Fornecedor {} foi removido durante a reavaliação; avaliação descartada", nova.cnpj());
         }
-        return view;
+        return fornecedor.map(f -> registrar(f, nova));
     }
 
     @Transactional
@@ -110,15 +123,27 @@ public class FornecedorService {
         return fornecedores.findByCnpj(cnpj.valor()).orElseThrow(() -> new FornecedorNaoEncontradoException(cnpj));
     }
 
-    private Avaliado avaliar(Cnpj cnpj) {
+    private AvaliacaoView registrar(FornecedorEntity fornecedor, NovaAvaliacao nova) {
+        NivelRisco anterior = fornecedor.getNivelRisco();
+        atualizar(fornecedor, nova);
+        AvaliacaoEntity avaliacao = avaliacoes.save(new AvaliacaoEntity(fornecedor, nova.analise().nivel(), anterior,
+                nova.resultado().fonte().nome(), fornecedor.getVerificadoEm(), nova.analise().alertas()));
+        AvaliacaoView view = AvaliacaoView.de(avaliacao);
+        if (view.mudou()) {
+            log.warn("Risco de {} mudou de {} para {}", nova.cnpj(), anterior, view.nivel());
+        }
+        return view;
+    }
+
+    private NovaAvaliacao avaliar(Cnpj cnpj) {
         ResultadoConsulta resultado = gateway.buscarEmpresa(cnpj);
         DadosEmpresa dados = resultado.dados();
         EnderecoCep cep = dados.cep() == null ? null : gateway.buscarCep(dados.cep()).orElse(null);
         AnaliseRisco analise = RegrasRisco.analisar(dados, cep, LocalDate.now(clock));
-        return new Avaliado(resultado, analise);
+        return new NovaAvaliacao(cnpj, resultado, analise);
     }
 
-    private void atualizar(FornecedorEntity f, Avaliado avaliado) {
+    private void atualizar(FornecedorEntity f, NovaAvaliacao avaliado) {
         DadosEmpresa d = avaliado.resultado().dados();
         f.setRazaoSocial(d.razaoSocial());
         f.setNomeFantasia(d.nomeFantasia());
@@ -130,5 +155,4 @@ public class FornecedorService {
         f.setVerificadoEm(Instant.now(clock));
     }
 
-    private record Avaliado(ResultadoConsulta resultado, AnaliseRisco analise) {}
 }

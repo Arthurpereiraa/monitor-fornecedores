@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.2.0] - 2026-11-19
+
+### Adicionado
+- Job do Spring Batch que reavalia todos os fornecedores em chunks de 10, agendado toda noite às 2h.
+- Tolerância a falhas: fornecedores com API fora do ar ou CNPJ não encontrado são pulados (skip), até um limite configurável.
+- Endpoint `POST /api/reavaliacoes` para rodar o job sob demanda, com resumo da execução (lidos, reavaliados, ignorados, quem piorou).
+- Metadados das execuções persistidos nas tabelas do Spring Batch.
+
+### Alterado
+- `FornecedorService` separa a consulta às APIs (sem transação) da gravação da avaliação.
+
 ## [0.1.0] - 2026-11-19
 
 ### Adicionado

@@ -25,5 +25,8 @@ GET {{base}}/api/fornecedores/00000000000191/avaliacoes
 ### Remover do monitoramento
 DELETE {{base}}/api/fornecedores/00000000000191
 
+### Reavaliar todos agora (mesmo job que roda toda noite)
+POST {{base}}/api/reavaliacoes
+
 ### Saúde da aplicação
 GET {{base}}/actuator/health
