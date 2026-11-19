@@ -1,0 +1,32 @@
+# Sobe a API com PostgreSQL: docker compose up --build
+services:
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_DB: fornecedores
+      POSTGRES_USER: fornecedores
+      POSTGRES_PASSWORD: fornecedores
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U fornecedores"]
+      interval: 5s
+      retries: 10
+    volumes:
+      - dados:/var/lib/postgresql/data
+
+  api:
+    build: .
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: postgres
+      DB_URL: jdbc:postgresql://db:5432/fornecedores
+      DB_USER: fornecedores
+      DB_PASSWORD: fornecedores
+    ports:
+      - "8080:8080"
+
+volumes:
+  dados:

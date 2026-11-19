@@ -1,0 +1,38 @@
+spring:
+  application:
+    name: monitor-fornecedores
+  # Padrão: banco H2 em memória, para rodar sem instalar nada. Use o perfil "postgres" para PostgreSQL.
+  datasource:
+    url: jdbc:h2:mem:fornecedores;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DB_CLOSE_DELAY=-1
+    username: sa
+    password: ""
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: none # o esquema é das migrações do Flyway
+  mvc:
+    problemdetails:
+      enabled: true
+
+app:
+  apis:
+    brasilapi-url: https://brasilapi.com.br/api
+    minha-receita-url: https://minhareceita.org
+    viacep-url: https://viacep.com.br/ws
+    timeout: 15s
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+---
+spring:
+  config:
+    activate:
+      on-profile: postgres
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/fornecedores}
+    username: ${DB_USER:fornecedores}
+    password: ${DB_PASSWORD:fornecedores}

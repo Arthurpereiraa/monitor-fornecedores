@@ -1,0 +1,29 @@
+### Exemplos de requisições (IntelliJ HTTP Client ou extensão REST Client do VS Code)
+@base = http://localhost:8080
+
+### Cadastrar um fornecedor (faz a primeira avaliação de risco)
+POST {{base}}/api/fornecedores
+Content-Type: application/json
+
+{ "cnpj": "00.000.000/0001-91" }
+
+### Listar todos
+GET {{base}}/api/fornecedores
+
+### Listar só os de risco alto
+GET {{base}}/api/fornecedores?nivel=ALTO&pagina=0&tamanho=20
+
+### Detalhar (use só os dígitos do CNPJ na URL)
+GET {{base}}/api/fornecedores/00000000000191
+
+### Reavaliar: consulta os dados de novo e detecta mudança de risco
+POST {{base}}/api/fornecedores/00000000000191/reavaliacoes
+
+### Histórico de avaliações
+GET {{base}}/api/fornecedores/00000000000191/avaliacoes
+
+### Remover do monitoramento
+DELETE {{base}}/api/fornecedores/00000000000191
+
+### Saúde da aplicação
+GET {{base}}/actuator/health
