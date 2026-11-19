@@ -13,6 +13,11 @@ spring:
   mvc:
     problemdetails:
       enabled: true
+  batch:
+    job:
+      enabled: false # o job roda pelo agendamento ou pela API, não ao subir a aplicação
+    jdbc:
+      initialize-schema: always # cria as tabelas de metadados do Spring Batch (BATCH_*)
 
 app:
   apis:
@@ -20,6 +25,10 @@ app:
     minha-receita-url: https://minhareceita.org
     viacep-url: https://viacep.com.br/ws
     timeout: 15s
+  reavaliacao:
+    cron: "0 0 2 * * *" # todo dia às 2h (horário de Brasília)
+    intervalo: 300ms # pausa entre fornecedores, para respeitar o limite das APIs públicas
+    limite-falhas: 20
 
 management:
   endpoints:

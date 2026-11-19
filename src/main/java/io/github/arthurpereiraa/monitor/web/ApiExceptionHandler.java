@@ -3,6 +3,7 @@ package io.github.arthurpereiraa.monitor.web;
 import io.github.arthurpereiraa.monitor.dominio.CnpjInvalidoException;
 import io.github.arthurpereiraa.monitor.integracao.EmpresaNaoEncontradaException;
 import io.github.arthurpereiraa.monitor.integracao.FonteIndisponivelException;
+import io.github.arthurpereiraa.monitor.lote.ReavaliacaoEmAndamentoException;
 import io.github.arthurpereiraa.monitor.servico.FornecedorJaCadastradoException;
 import io.github.arthurpereiraa.monitor.servico.FornecedorNaoEncontradoException;
 import java.util.stream.Collectors;
@@ -31,6 +32,11 @@ public class ApiExceptionHandler {
     @ExceptionHandler(FornecedorJaCadastradoException.class)
     ProblemDetail jaCadastrado(FornecedorJaCadastradoException e) {
         return problema(HttpStatus.CONFLICT, "Fornecedor já cadastrado", e.getMessage());
+    }
+
+    @ExceptionHandler(ReavaliacaoEmAndamentoException.class)
+    ProblemDetail reavaliacaoEmAndamento(ReavaliacaoEmAndamentoException e) {
+        return problema(HttpStatus.CONFLICT, "Reavaliação em andamento", e.getMessage());
     }
 
     @ExceptionHandler(FonteIndisponivelException.class)
