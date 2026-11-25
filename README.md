@@ -22,7 +22,7 @@
 
 ## Stack
 
-**Java 21** · **Spring Boot 4.1** (Web MVC, Data JPA, Validation, Actuator) · **Spring Batch 6** · **Flyway** · **PostgreSQL** (H2 para desenvolvimento) · **JUnit 5 + Mockito + MockMvc** · **Docker** · **GitHub Actions**
+**Java 21** · **Spring Boot 4.1** (Web MVC, Data JPA, Validation, Actuator) · **Spring Batch 6** · **springdoc-openapi (Swagger)** · **Flyway** · **PostgreSQL** (H2 para desenvolvimento) · **JUnit 5 + Mockito + MockMvc** · **Docker** · **GitHub Actions**
 
 ## Arquitetura
 
@@ -57,8 +57,11 @@ Algumas decisões de projeto:
 | `DELETE` | `/api/fornecedores/{cnpj}` | Remove do monitoramento |
 | `POST` | `/api/reavaliacoes` | Roda agora o job de reavaliação de todos (o mesmo da noite) |
 | `GET` | `/actuator/health` | Saúde da aplicação |
+| `GET` | `/swagger-ui.html` | Documentação interativa da API |
 
-Exemplos prontos para rodar estão em [`http/fornecedores.http`](http/fornecedores.http). Na URL, use só os dígitos do CNPJ.
+A documentação interativa (OpenAPI/Swagger) fica em **http://localhost:8080/swagger-ui.html**, com a especificação em `/v3/api-docs`. Dá para testar cada rota direto pelo navegador.
+
+Exemplos prontos para rodar também estão em [`http/fornecedores.http`](http/fornecedores.http). Na URL, use só os dígitos do CNPJ.
 
 <details>
 <summary>Exemplo de resposta de uma reavaliação em que o risco piorou</summary>
@@ -138,6 +141,7 @@ docker compose up --build
 | Serviço | Mockito: cadastro, duplicado, CNPJ inválido, detecção de piora |
 | Web | MockMvc: status, `Location`, Problem Details, filtro por nível |
 | Ponta a ponta | `@SpringBootTest` com Flyway e H2: cadastrar, listar, reavaliar, histórico, remover |
+| Documentação | `/v3/api-docs` gerado com título, versão e rotas |
 | Job em lote | `@SpringBootTest` rodando o job de verdade: quem piorou, quem foi pulado, banco vazio |
 
 ## Próximos passos
@@ -145,7 +149,8 @@ docker compose up --build
 - [x] **Spring Batch:** job noturno que reavalia todos os fornecedores
 - [ ] **RabbitMQ:** evento quando o risco de um fornecedor piora
 - [ ] **Spring Security + JWT**
-- [ ] **OpenAPI/Swagger** e **Testcontainers** com PostgreSQL real
+- [x] **OpenAPI/Swagger**
+- [ ] **Testcontainers** com PostgreSQL real
 
 ## Feito com IA
 

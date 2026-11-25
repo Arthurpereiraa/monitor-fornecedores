@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.3.0] - 2026-11-24
+
+### Adicionado
+- Documentação OpenAPI com Swagger UI em `/swagger-ui.html` (springdoc-openapi 3).
+- Resumo e descrição de cada rota, agrupadas por assunto.
+
 ## [0.2.0] - 2026-11-19
 
 ### Adicionado
