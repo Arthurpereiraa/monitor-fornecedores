@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -42,6 +43,11 @@ public class ApiExceptionHandler {
     @ExceptionHandler(FonteIndisponivelException.class)
     ProblemDetail fonteIndisponivel(FonteIndisponivelException e) {
         return problema(HttpStatus.SERVICE_UNAVAILABLE, "Fontes de dados indisponíveis", e.getMessage());
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    ProblemDetail naoAutenticado(AuthenticationException e) {
+        return problema(HttpStatus.UNAUTHORIZED, "Não autenticado", "Usuário ou senha inválidos.");
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

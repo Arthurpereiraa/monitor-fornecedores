@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.0.0] - 2026-11-24
+
+### Adicionado
+- Autenticação com JWT (Spring Security como resource server, HS256, sem sessão).
+- Login em `POST /api/auth/token` com dois perfis: `analista` (leitura) e `admin` (leitura e escrita).
+- Botão Authorize no Swagger UI, com o esquema bearer declarado na documentação OpenAPI.
+- Senhas e segredo do token configuráveis por variáveis de ambiente.
+
 ## [0.3.0] - 2026-11-24
 
 ### Adicionado

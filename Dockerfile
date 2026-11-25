@@ -1,11 +1,10 @@
-# Etapa 1: compila e roda os testes
+# Etapa 1: compila a aplicação
 FROM eclipse-temurin:21-jdk AS build
 WORKDIR /app
 COPY gradlew settings.gradle build.gradle ./
 COPY gradle gradle
-RUN chmod +x gradlew && ./gradlew --no-daemon dependencies > /dev/null
 COPY src src
-RUN ./gradlew --no-daemon bootJar
+RUN chmod +x gradlew && ./gradlew --no-daemon bootJar
 
 # Etapa 2: imagem final só com o JRE e o jar
 FROM eclipse-temurin:21-jre

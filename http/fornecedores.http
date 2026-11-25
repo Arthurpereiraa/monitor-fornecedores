@@ -1,32 +1,48 @@
 ### Exemplos de requisições (IntelliJ HTTP Client ou extensão REST Client do VS Code)
 @base = http://localhost:8080
+# Faça o login abaixo e cole aqui o valor de "token" da resposta
+@token = cole-o-token-aqui
+
+### Login (admin: leitura e escrita | analista: só leitura)
+POST {{base}}/api/auth/token
+Content-Type: application/json
+
+{ "usuario": "admin", "senha": "admin123" }
 
 ### Cadastrar um fornecedor (faz a primeira avaliação de risco)
 POST {{base}}/api/fornecedores
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 { "cnpj": "00.000.000/0001-91" }
 
 ### Listar todos
 GET {{base}}/api/fornecedores
+Authorization: Bearer {{token}}
 
 ### Listar só os de risco alto
 GET {{base}}/api/fornecedores?nivel=ALTO&pagina=0&tamanho=20
+Authorization: Bearer {{token}}
 
 ### Detalhar (use só os dígitos do CNPJ na URL)
 GET {{base}}/api/fornecedores/00000000000191
+Authorization: Bearer {{token}}
 
 ### Reavaliar: consulta os dados de novo e detecta mudança de risco
 POST {{base}}/api/fornecedores/00000000000191/reavaliacoes
+Authorization: Bearer {{token}}
 
 ### Histórico de avaliações
 GET {{base}}/api/fornecedores/00000000000191/avaliacoes
+Authorization: Bearer {{token}}
 
 ### Remover do monitoramento
 DELETE {{base}}/api/fornecedores/00000000000191
+Authorization: Bearer {{token}}
 
 ### Reavaliar todos agora (mesmo job que roda toda noite)
 POST {{base}}/api/reavaliacoes
+Authorization: Bearer {{token}}
 
 ### Saúde da aplicação
 GET {{base}}/actuator/health
