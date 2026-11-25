@@ -25,6 +25,10 @@ services:
       DB_URL: jdbc:postgresql://db:5432/fornecedores
       DB_USER: fornecedores
       DB_PASSWORD: fornecedores
+      # Troque antes de usar fora da sua máquina
+      JWT_SEGREDO: troque-este-segredo-por-um-valor-longo-e-aleatorio
+      ADMIN_SENHA: admin123
+      ANALISTA_SENHA: analista123
     ports:
       - "8080:8080"
 

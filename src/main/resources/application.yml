@@ -20,7 +20,13 @@ spring:
       initialize-schema: always # cria as tabelas de metadados do Spring Batch (BATCH_*)
 
 app:
-  versao: 0.3.0 # exibida na documentação do Swagger
+  versao: 1.0.0 # exibida na documentação do Swagger
+  seguranca:
+    # Valores só para desenvolvimento. Em produção, defina as variáveis de ambiente.
+    segredo-jwt: ${JWT_SEGREDO:segredo-de-desenvolvimento-troque-em-producao}
+    validade-token: 1h
+    senha-admin: ${ADMIN_SENHA:admin123}
+    senha-analista: ${ANALISTA_SENHA:analista123}
   apis:
     brasilapi-url: https://brasilapi.com.br/api
     minha-receita-url: https://minhareceita.org
