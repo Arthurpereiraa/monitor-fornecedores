@@ -20,6 +20,7 @@ spring:
       initialize-schema: always # cria as tabelas de metadados do Spring Batch (BATCH_*)
 
 app:
+  versao: 0.3.0 # exibida na documentação do Swagger
   apis:
     brasilapi-url: https://brasilapi.com.br/api
     minha-receita-url: https://minhareceita.org
@@ -29,6 +30,11 @@ app:
     cron: "0 0 2 * * *" # todo dia às 2h (horário de Brasília)
     intervalo: 300ms # pausa entre fornecedores, para respeitar o limite das APIs públicas
     limite-falhas: 20
+
+springdoc:
+  swagger-ui:
+    operations-sorter: method
+    tags-sorter: alpha
 
 management:
   endpoints:
